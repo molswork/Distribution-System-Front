@@ -102,6 +102,41 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
     ],
   },
   {
+    path: '/agent',
+    name: 'Agent',
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/agent/list',
+    meta: {
+      title: '代理管理',
+      icon: 'users-2',
+      roles: ['super_admin', 'director', 'leader'],
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: '/agent/list',
+        name: 'AgentList',
+        component: () => import('@/views/agent/AgentList.vue'),
+        meta: {
+          title: '代理列表',
+          roles: ['super_admin', 'director', 'leader'],
+          requiresAuth: true,
+        },
+      },
+      {
+        path: '/agent/:id',
+        name: 'AgentDetail',
+        component: () => import('@/views/agent/AgentDetail.vue'),
+        meta: {
+          title: '代理详情',
+          roles: ['super_admin', 'director', 'leader'],
+          requiresAuth: true,
+          hidden: true,
+        },
+      },
+    ],
+  },
+  {
     path: '/lead',
     name: 'Lead',
     component: () => import('@/layouts/MainLayout.vue'),
@@ -192,6 +227,60 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         meta: {
           title: '等级规则',
           roles: ['super_admin'],
+          requiresAuth: true,
+        },
+      },
+      {
+        path: '/settings/agent-rules',
+        name: 'AgentRules',
+        component: () => import('@/views/settings/LevelRule.vue'), // 临时使用已存在的组件
+        meta: {
+          title: '代理规则',
+          roles: ['super_admin'],
+          requiresAuth: true,
+        },
+      },
+      {
+        path: '/settings/commission',
+        name: 'CommissionRules',
+        component: () => import('@/views/settings/LevelRule.vue'), // 临时使用已存在的组件
+        meta: {
+          title: '返佣规则',
+          roles: ['super_admin'],
+          requiresAuth: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/analytics',
+    name: 'Analytics',
+    component: () => import('@/layouts/MainLayout.vue'),
+    redirect: '/analytics/overview',
+    meta: {
+      title: '数据统计',
+      icon: 'bar-chart',
+      roles: ['super_admin', 'director'],
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: '/analytics/overview',
+        name: 'AnalyticsOverview',
+        component: () => import('@/views/dashboard/Index.vue'), // 临时使用仪表盘组件
+        meta: {
+          title: '综合统计',
+          roles: ['super_admin', 'director'],
+          requiresAuth: true,
+        },
+      },
+      {
+        path: '/analytics/performance',
+        name: 'PerformanceAnalytics',
+        component: () => import('@/views/dashboard/Index.vue'), // 临时使用仪表盘组件
+        meta: {
+          title: '绩效分析',
+          roles: ['super_admin', 'director'],
           requiresAuth: true,
         },
       },

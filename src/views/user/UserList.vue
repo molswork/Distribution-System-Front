@@ -170,142 +170,208 @@ const searchParams = reactive<UserSearchParams>({
 const columns = [
   {
     id: 'avatar',
-    header: () => h('div', { class: 'text-center' }, '头像'),
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'flex justify-center' }, [
-        h(Avatar, { class: 'h-10 w-10' }, () => [
-          h(AvatarImage, { src: user.avatar }),
-          h(AvatarFallback, user.username.slice(0, 2).toUpperCase()),
-        ]),
-      ])
-    },
+    header: '头像',
+    cell: ({ row }) => {
+      return {
+        template: `
+          <div class="flex justify-center">
+            <Avatar class="h-10 w-10">
+              <AvatarImage :src="row.avatar" />
+              <AvatarFallback>{{ row.username.slice(0, 2).toUpperCase() }}</AvatarFallback>
+            </Avatar>
+          </div>
+        `,
+        setup() {
+          return { row, Avatar, AvatarImage, AvatarFallback }
+        }
+      }
+    }
   },
   {
     accessorKey: 'username',
     header: '用户名',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'font-medium' }, user.username)
-    },
+    cell: ({ row }) => {
+      return {
+        template: `<div class="font-medium">{{ row.username }}</div>`,
+        setup() {
+          return { row }
+        }
+      }
+    }
   },
   {
     accessorKey: 'email',
     header: '邮箱',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'text-sm text-gray-600' }, user.email)
-    },
+    cell: ({ row }) => {
+      return {
+        template: `<div class="text-sm text-gray-600">{{ row.email }}</div>`,
+        setup() {
+          return { row }
+        }
+      }
+    }
   },
   {
     accessorKey: 'phone',
     header: '手机号',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'text-sm' }, user.phone)
-    },
+    cell: ({ row }) => {
+      return {
+        template: `<div class="text-sm">{{ row.phone }}</div>`,
+        setup() {
+          return { row }
+        }
+      }
+    }
   },
   {
     accessorKey: 'role',
     header: '角色',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      const roleMap = {
-        super_admin: '超级管理员',
-        director: '总监',
-        leader: '主管',
-        sales: '销售',
-        agent: '代理',
+    cell: ({ row }) => {
+      return {
+        template: `
+          <Badge :variant="row.role === 'super_admin' ? 'default' : 'secondary'">
+            {{ getRoleName(row.role) }}
+          </Badge>
+        `,
+        setup() {
+          const getRoleName = (role) => {
+            const roleMap = {
+              super_admin: '超级管理员',
+              director: '总监',
+              leader: '主管',
+              sales: '销售',
+              agent: '代理',
+            }
+            return roleMap[role] || role
+          }
+          return { row, Badge, getRoleName }
+        }
       }
-      return h(
-        Badge,
-        {
-          variant: user.role === 'super_admin' ? 'default' : 'secondary',
-        },
-        roleMap[user.role] || user.role
-      )
-    },
+    }
   },
   {
     accessorKey: 'status',
     header: '状态',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-      // 定义状态映射
-      const statusMap: Record<UserStatus, { text: string, variant: BadgeVariant }> = {
-        active: { text: '正常', variant: 'default' },
-        inactive: { text: '禁用', variant: 'secondary' },
-        pending: { text: '待审核', variant: 'outline' }, // 改为outline代替warning
-        banned: { text: '封禁', variant: 'destructive' },
+    cell: ({ row }) => {
+      return {
+        template: `
+          <Badge :variant="getStatusVariant(row.status)">
+            {{ getStatusText(row.status) }}
+          </Badge>
+        `,
+        setup() {
+          const getStatusVariant = (status) => {
+            const variantMap = {
+              active: 'default',
+              inactive: 'secondary',
+              pending: 'outline',
+              banned: 'destructive',
+            }
+            return variantMap[status] || 'default'
+          }
+          
+          const getStatusText = (status) => {
+            const textMap = {
+              active: '正常',
+              inactive: '禁用',
+              pending: '待审核',
+              banned: '封禁',
+            }
+            return textMap[status] || status
+          }
+          
+          return { row, Badge, getStatusVariant, getStatusText }
+        }
       }
-      const status = statusMap[user.status]
-      return h(Badge, { variant: status.variant }, status.text)
-    },
+    }
   },
   {
     accessorKey: 'level',
     header: '等级',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'text-center' }, user.level)
-    },
+    cell: ({ row }) => {
+      return {
+        template: `<div class="text-center">{{ row.level }}</div>`,
+        setup() {
+          return { row }
+        }
+      }
+    }
   },
   {
     accessorKey: 'commission_rate',
     header: '佣金比例',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'text-center' }, `${user.commission_rate}%`)
-    },
+    cell: ({ row }) => {
+      return {
+        template: `<div class="text-center">{{ row.commission_rate }}%</div>`,
+        setup() {
+          return { row }
+        }
+      }
+    }
   },
   {
     accessorKey: 'created_at',
     header: '创建时间',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h(
-        'div',
-        { class: 'text-sm text-gray-600' },
-        new Date(user.created_at).toLocaleDateString()
-      )
-    },
+    cell: ({ row }) => {
+      return {
+        template: `<div class="text-sm text-gray-600">{{ formatDate(row.created_at) }}</div>`,
+        setup() {
+          const formatDate = (dateString) => {
+            try {
+              return new Date(dateString).toLocaleDateString()
+            } catch (e) {
+              return dateString
+            }
+          }
+          return { row, formatDate }
+        }
+      }
+    }
   },
   {
     id: 'actions',
     header: '操作',
-    cell: ({ row }: any) => {
-      const user = row.original as User
-      return h('div', { class: 'flex items-center space-x-1' }, [
-        h(
-          Button,
-          {
-            variant: 'ghost',
-            size: 'sm',
-            onClick: () => handleEditUser(user),
-          },
-          () => h(Edit, { class: 'h-4 w-4' })
-        ),
-        h(
-          Button,
-          {
-            variant: 'ghost',
-            size: 'sm',
-            onClick: () => handleResetPassword(user),
-          },
-          () => h(KeyRound, { class: 'h-4 w-4' })
-        ),
-        h(
-          Button,
-          {
-            variant: 'ghost',
-            size: 'sm',
-            onClick: () => handleViewUser(user),
-          },
-          () => h(Eye, { class: 'h-4 w-4' })
-        ),
-      ])
-    },
+    cell: ({ row }) => {
+      return {
+        template: `
+          <div class="flex items-center space-x-1">
+            <Button variant="ghost" size="sm" @click="onEdit(row)">
+              <Edit class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" @click="onResetPassword(row)">
+              <KeyRound class="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" @click="onView(row)">
+              <Eye class="h-4 w-4" />
+            </Button>
+          </div>
+        `,
+        setup() {
+          const onEdit = (user) => {
+            handleEditUser(user)
+          }
+          
+          const onResetPassword = (user) => {
+            handleResetPassword(user)
+          }
+          
+          const onView = (user) => {
+            handleViewUser(user)
+          }
+          
+          return { 
+            row, 
+            onEdit, 
+            onResetPassword, 
+            onView,
+            Button,
+            Edit,
+            KeyRound,
+            Eye
+          }
+        }
+      }
+    }
   },
 ]
 

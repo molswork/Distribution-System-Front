@@ -99,6 +99,9 @@ export const http = {
 
   delete: <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> =>
     request.delete(url, config),
+    
+  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
+    request.patch(url, data, config),
 }
 
 export default request
